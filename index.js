@@ -3,7 +3,7 @@
 const express = require('express');
 const yts = require('yt-search');
 const ytdl = require('ytdl-core');
-// const youtubedl = require('youtube-dl');
+const youtubedl = require('youtube-dl');
 const app = express();
 const cors = require('cors');
 
@@ -100,6 +100,36 @@ async function formatGen(id) {
   return tempReqs;
 }
 
+async function genFormat(id, cb) {
+  let info = [];
+  let tempReqs = [];
+  let URL = `http://www.youtube.com/watch?v=${id}`;
+
+  youtubedl.getInfo(URL, [], (err, data) => {
+    if (err) {
+      res.status(400).json({ success: false, error: err });
+    }
+    info = data;
+    info.formats.forEach((obj) => {
+      var singleObj = Object.keys(obj).reduce((object, key) => {
+        if (
+          key === 'format' ||
+          key === 'ext' ||
+          key === 'filesize' ||
+          key === 'format_id'
+        ) {
+          object[key] = obj[key];
+        }
+        return object;
+      }, {});
+      tempReqs = [...tempReqs, singleObj];
+    });
+    if (cb) {
+      return cb(tempReqs);
+    }
+  });
+}
+
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
@@ -127,11 +157,18 @@ app.get('/video', (req, res) => {
   });
 });
 
-app.get('/getformat/:id', async (req, res) => {
+app.get('/getformat/:id', (req, res) => {
   let { id } = req.params;
+  let URL = `http://www.youtube.com/watch?v=${id}`;
   //   console.log(id);
-  let data = await formatGen(id);
-  res.json({ success: true, result: data });
+  genFormat(id, (data) => {
+    res.json({ success: true, result: data });
+  });
+  // youtubedl.getInfo(URL, [], (err, data) => {
+  //   if (err) {
+  //     res.status(400).json({ success: false, error: err });
+  //   }
+  // });
 });
 
 app.get('/download', (req, res) => {
