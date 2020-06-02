@@ -110,9 +110,17 @@ app.get('/video', (req, res) => {
   yts(s || 'ReactJs', async (err, dt) => {
     let data = [];
     if (err) {
-      res.status(500).json({ success: false });
+      res
+        .status(500)
+        .json({ success: false, message: 'Error while loading...' });
     }
     data = await dt.videos;
+
+    if (!data[0].videoId) {
+      res
+        .status(500)
+        .json({ success: false, message: 'Error While Loading...' });
+    }
 
     data.length = l || 12;
     res.json({ success: true, result: data });
