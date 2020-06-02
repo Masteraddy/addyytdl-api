@@ -1,0 +1,20 @@
+{
+  "name": "addyytdl",
+  "version": "1.0.0",
+  "description": "Simple Youtube downloader",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "author": "Masteraddy",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "lodash": "^4.17.15",
+    "youtube-dl": "^3.0.2",
+    "yt-search": "^1.1.2",
+    "ytdl-core": "^3.0.0"
+  }
+}
